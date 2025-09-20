@@ -38,13 +38,48 @@ let package = Package(
       name: "StructuredQueriesTagged",
       description: "Introduce StructuredQueries conformances to the swift-tagged package.",
       enabledTraits: []
-    )
+    ),
+    .trait(
+      name: "StructuredQueriesCustomDump",
+      description: "Include swift-custom-dump support.",
+      enabledTraits: []
+    ),
+    .trait(
+      name: "StructuredQueriesDependencies",
+      description: "Include swift-dependencies support.",
+      enabledTraits: []
+    ),
+    .trait(
+      name: "StructuredQueriesMacroTesting",
+      description:
+        "Include swift-macro-testing support. Generally only needed when running unit tests.",
+      enabledTraits: []
+    ),
+    .trait(
+      name: "StructuredQueriesSnapshotTesting",
+      description:
+        "Include swift-snapshot-testing support. Generally only needed when running unit tests.",
+      enabledTraits: []
+    ),
+    .trait(
+      name: "StructuredQueriesIssueReporting",
+      description: "Include swift-issue-reporting (nee xctest-dynamic-overlay) support.",
+      enabledTraits: []
+    ),
   ],
   dependencies: [
     .package(url: "https://github.com/pointfreeco/swift-custom-dump", from: "1.3.3"),
     .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.8.1"),
-    .package(url: "https://github.com/pointfreeco/swift-macro-testing", from: "0.6.3"),
-    .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.18.4"),
+    .package(url: "https://github.com/bok-/swift-macro-testing-with-traits", from: "0.6.4+traits"),
+    .package(
+      url: "https://github.com/bok-/swift-snapshot-testing-with-traits",
+      exact: "1.18.7+traits",
+      traits: [
+        .trait(
+          name: "SnapshotTestingCustomDump",
+          condition: .when(traits: ["StructuredQueriesCustomDump"]))
+      ]
+    ),
     .package(url: "https://github.com/pointfreeco/swift-tagged", from: "0.10.0"),
     .package(url: "https://github.com/pointfreeco/xctest-dynamic-overlay", from: "1.5.2"),
     .package(url: "https://github.com/swiftlang/swift-syntax", "600.0.0"..<"603.0.0"),
@@ -60,7 +95,11 @@ let package = Package(
     .target(
       name: "StructuredQueriesCore",
       dependencies: [
-        .product(name: "IssueReporting", package: "xctest-dynamic-overlay"),
+        .product(
+          name: "IssueReporting",
+          package: "xctest-dynamic-overlay",
+          condition: .when(traits: ["StructuredQueriesIssueReporting"])
+        ),
         .product(
           name: "Tagged",
           package: "swift-tagged",
@@ -89,8 +128,7 @@ let package = Package(
     .target(
       name: "StructuredQueriesSQLiteCore",
       dependencies: [
-        "StructuredQueriesCore",
-        .product(name: "IssueReporting", package: "xctest-dynamic-overlay"),
+        "StructuredQueriesCore"
       ]
     ),
     .macro(
@@ -105,8 +143,16 @@ let package = Package(
       name: "StructuredQueriesTestSupport",
       dependencies: [
         "StructuredQueriesCore",
-        .product(name: "CustomDump", package: "swift-custom-dump"),
-        .product(name: "InlineSnapshotTesting", package: "swift-snapshot-testing"),
+        .product(
+          name: "CustomDump",
+          package: "swift-custom-dump",
+          condition: .when(traits: ["StructuredQueriesCustomDump"])
+        ),
+        .product(
+          name: "InlineSnapshotTesting",
+          package: "swift-snapshot-testing-with-traits",
+          condition: .when(traits: ["StructuredQueriesSnapshotTesting"])
+        ),
       ]
     ),
     .testTarget(
@@ -114,8 +160,16 @@ let package = Package(
       dependencies: [
         "StructuredQueriesMacros",
         "StructuredQueriesSQLiteMacros",
-        .product(name: "IssueReporting", package: "xctest-dynamic-overlay"),
-        .product(name: "MacroTesting", package: "swift-macro-testing"),
+        .product(
+          name: "IssueReporting",
+          package: "xctest-dynamic-overlay",
+          condition: .when(traits: ["StructuredQueriesIssueReporting"])
+        ),
+        .product(
+          name: "MacroTesting",
+          package: "swift-macro-testing-with-traits",
+          condition: .when(traits: ["StructuredQueriesMacroTesting"])
+        ),
       ]
     ),
     .testTarget(
@@ -125,9 +179,21 @@ let package = Package(
         "StructuredQueriesSQLite",
         "StructuredQueriesTestSupport",
         "_StructuredQueriesSQLite",
-        .product(name: "CustomDump", package: "swift-custom-dump"),
-        .product(name: "Dependencies", package: "swift-dependencies"),
-        .product(name: "InlineSnapshotTesting", package: "swift-snapshot-testing"),
+        .product(
+          name: "CustomDump",
+          package: "swift-custom-dump",
+          condition: .when(traits: ["StructuredQueriesCustomDump"])
+        ),
+        .product(
+          name: "Dependencies",
+          package: "swift-dependencies",
+          condition: .when(traits: ["StructuredQueriesDependencies"])
+        ),
+        .product(
+          name: "InlineSnapshotTesting",
+          package: "swift-snapshot-testing-with-traits",
+          condition: .when(traits: ["StructuredQueriesSnapshotTesting"])
+        ),
       ]
     ),
 

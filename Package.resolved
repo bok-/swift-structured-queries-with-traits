@@ -1,5 +1,5 @@
 {
-  "originHash" : "b6033fa4261d16bb8a2e8455921e171958017330c579e5ecb9ec44fe836d2099",
+  "originHash" : "34a0b1a77d4f57c7912a052f685b5c1292ba06815a52a3afbeef620f1f8c8406",
   "pins" : [
     {
       "identity" : "combine-schedulers",
@@ -43,7 +43,7 @@
       "location" : "https://github.com/pointfreeco/swift-dependencies",
       "state" : {
         "revision" : "a10f9feeb214bc72b5337b6ef6d5a029360db4cc",
-        "version" : "1.9.5"
+        "version" : "1.10.0"
       }
     },
     {
@@ -65,20 +65,20 @@
       }
     },
     {
-      "identity" : "swift-macro-testing",
+      "identity" : "swift-macro-testing-with-traits",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/pointfreeco/swift-macro-testing",
+      "location" : "https://github.com/bok-/swift-macro-testing-with-traits",
       "state" : {
-        "revision" : "9ab11325daa51c7c5c10fcf16c92bac906717c7e",
+        "revision" : "9bc9d66f75e7141ac1ee76d5272eb459df2a4d24",
         "version" : "0.6.4"
       }
     },
     {
-      "identity" : "swift-snapshot-testing",
+      "identity" : "swift-snapshot-testing-with-traits",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/pointfreeco/swift-snapshot-testing",
+      "location" : "https://github.com/bok-/swift-snapshot-testing-with-traits",
       "state" : {
-        "revision" : "a8b7c5e0ed33d8ab8887d1654d9b59f2cbad529b",
+        "revision" : "4071e8f1a5f95de26a8187c53acc6bfb05869b9e",
         "version" : "1.18.7"
       }
     },

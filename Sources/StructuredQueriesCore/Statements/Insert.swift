@@ -1,5 +1,3 @@
-import IssueReporting
-
 extension Table {
   /// Columns referencing the value that would have been inserted in an
   /// [insert statement](<doc:InsertStatements>) had there been no conflict.

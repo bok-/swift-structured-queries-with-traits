@@ -7,6 +7,18 @@
 
 A library for building SQL in a safe, expressive, and composable manner.
 
+>[!NOTE]
+>This package is a fork of [swift-structured-queries](https://github.com/pointfreeco/swift-structured-queries) with additional traits for opt-in features, making it more _composable_. Upstream is merged sporadically.
+>
+>### Why does this fork exist?
+>
+>[Point-Free](https://www.pointfree.co) make good software and tools, but often their packages come with dependencies on the rest of the Point-Free ecosystem for entirely optional behaviour. So even if you don't want or need those dependencies, you have them anyway. Wrapping optional behaviour in traits is easy, but unfortunately there are bugs in Xcode (up to and including 26.0) and it doesn't respect default enabled traits. So were Point-Free to accept a PR with these traits it would be a backwards-incompatible change as far as Xcode is concerned, hence this fork.
+>
+> To run unit tests successfully for this package you will need to enable several traits:
+>
+>```swift
+>swift test --traits StructuredQueriesSnapshotTesting,StructuredQueriesIssueReporting,StructuredQueriesDependencies,StructuredQueriesCustomDump,StructuredQueriesMacroTesting
+>```
 ## Learn more
 
 This library was motivated and designed over the course of many episodes on

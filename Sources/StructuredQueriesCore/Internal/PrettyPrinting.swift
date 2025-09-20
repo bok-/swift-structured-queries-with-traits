@@ -1,12 +1,19 @@
 import Foundation
-import IssueReporting
+
+#if canImport(IssueReporting)
+  import IssueReporting
+#endif
 
 extension QueryFragment {
   @inlinable
   @inline(__always)
   package static var newlineOrSpace: Self {
     #if DEBUG
-      return isTesting ? "\n" : " "
+      #if canImport(IssueReporting)
+        return isTesting ? "\n" : " "
+      #else
+        return "\n"
+      #endif
     #else
       return " "
     #endif
@@ -16,7 +23,11 @@ extension QueryFragment {
   @inline(__always)
   package static var newline: Self {
     #if DEBUG
-      return isTesting ? "\n" : ""
+      #if canImport(IssueReporting)
+        return isTesting ? "\n" : ""
+      #else
+        return "\n"
+      #endif
     #else
       return ""
     #endif
@@ -27,7 +38,7 @@ extension QueryFragment {
     @inline(__always)
   #endif
   package func indented() -> Self {
-    #if DEBUG
+    #if DEBUG && canImport(IssueReporting)
       guard isTesting else { return self }
       var query = self
       query.segments.insert(.sql("  "), at: 0)

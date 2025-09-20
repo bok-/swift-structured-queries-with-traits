@@ -101,7 +101,7 @@ extension Int64: QueryBindable {
 extension String: QueryBindable {
   public var queryBinding: QueryBinding { .text(self) }
   public init?(queryBinding: QueryBinding) {
-    guard case let .text(value) = queryBinding else { return nil }
+    guard case .text(let value) = queryBinding else { return nil }
     self = value
   }
 }
