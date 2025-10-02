@@ -142,12 +142,10 @@ extension Table {
   ///     existing row.
   ///   - updateFilter: A filter to apply to the update clause.
   /// - Returns: An insert statement.
-  public static func insert<T1, each T2>(
+  public static func insert<T1: _TableColumnExpression, each T2: _TableColumnExpression>(
     _ columns: (TableColumns) -> TableColumns = { $0 },
     @InsertValuesBuilder<Self> values: () -> [[QueryFragment]],
-    onConflict conflictTargets: (TableColumns) -> (
-      TableColumn<Self, T1>, repeat TableColumn<Self, each T2>
-    ),
+    onConflict conflictTargets: (TableColumns) -> (T1, repeat each T2),
     @QueryFragmentBuilder<Bool>
     where targetFilter: (TableColumns) -> [QueryFragment] = { _ in [] },
     doUpdate updates: (inout Updates<Self>, Excluded) -> Void = { _, _ in },
@@ -177,12 +175,10 @@ extension Table {
   ///     existing row.
   ///   - updateFilter: A filter to apply to the update clause.
   /// - Returns: An insert statement.
-  public static func insert<T1, each T2>(
+  public static func insert<T1: _TableColumnExpression, each T2: _TableColumnExpression>(
     _ columns: (TableColumns) -> TableColumns = { $0 },
     @InsertValuesBuilder<Self> values: () -> [[QueryFragment]],
-    onConflict conflictTargets: (TableColumns) -> (
-      TableColumn<Self, T1>, repeat TableColumn<Self, each T2>
-    ),
+    onConflict conflictTargets: (TableColumns) -> (T1, repeat each T2),
     @QueryFragmentBuilder<Bool>
     where targetFilter: (TableColumns) -> [QueryFragment] = { _ in [] },
     doUpdate updates: (inout Updates<Self>) -> Void,
@@ -253,9 +249,9 @@ extension Table {
   ///     existing row.
   ///   - updateFilter: A filter to apply to the update clause.
   /// - Returns: An insert statement.
-  public static func insert<V1, each V2>(
-    _ columns: (TableColumns) -> (TableColumn<Self, V1>, repeat TableColumn<Self, each V2>),
-    @InsertValuesBuilder<(V1, repeat each V2)>
+  public static func insert<V1: _TableColumnExpression, each V2: _TableColumnExpression>(
+    _ columns: (TableColumns) -> (V1, repeat each V2),
+    @InsertValuesBuilder<(V1.Value, repeat (each V2).Value)>
     values: () -> [[QueryFragment]],
     onConflictDoUpdate updates: ((inout Updates<Self>, Excluded) -> Void)? = nil,
     @QueryFragmentBuilder<Bool>
@@ -280,9 +276,9 @@ extension Table {
   ///     existing row.
   ///   - updateFilter: A filter to apply to the update clause.
   /// - Returns: An insert statement.
-  public static func insert<V1, each V2>(
-    _ columns: (TableColumns) -> (TableColumn<Self, V1>, repeat TableColumn<Self, each V2>),
-    @InsertValuesBuilder<(V1, repeat each V2)>
+  public static func insert<V1: _TableColumnExpression, each V2: _TableColumnExpression>(
+    _ columns: (TableColumns) -> (V1, repeat each V2),
+    @InsertValuesBuilder<(V1.Value, repeat (each V2).Value)>
     values: () -> [[QueryFragment]],
     onConflictDoUpdate updates: ((inout Updates<Self>) -> Void)?,
     @QueryFragmentBuilder<Bool>
@@ -307,13 +303,16 @@ extension Table {
   ///     existing row.
   ///   - updateFilter: A filter to apply to the update clause.
   /// - Returns: An insert statement.
-  public static func insert<V1, each V2, T1, each T2>(
-    _ columns: (TableColumns) -> (TableColumn<Self, V1>, repeat TableColumn<Self, each V2>),
-    @InsertValuesBuilder<(V1, repeat each V2)>
+  public static func insert<
+    V1: _TableColumnExpression,
+    each V2: _TableColumnExpression,
+    T1: _TableColumnExpression,
+    each T2: _TableColumnExpression
+  >(
+    _ columns: (TableColumns) -> (V1, repeat each V2),
+    @InsertValuesBuilder<(V1.Value, repeat (each V2).Value)>
     values: () -> [[QueryFragment]],
-    onConflict conflictTargets: (TableColumns) -> (
-      TableColumn<Self, T1>, repeat TableColumn<Self, each T2>
-    ),
+    onConflict conflictTargets: (TableColumns) -> (T1, repeat each T2),
     @QueryFragmentBuilder<Bool>
     where targetFilter: (TableColumns) -> [QueryFragment] = { _ in [] },
     doUpdate updates: (inout Updates<Self>, Excluded) -> Void = { _, _ in },
@@ -343,13 +342,16 @@ extension Table {
   ///     existing row.
   ///   - updateFilter: A filter to apply to the update clause.
   /// - Returns: An insert statement.
-  public static func insert<V1, each V2, T1, each T2>(
-    _ columns: (TableColumns) -> (TableColumn<Self, V1>, repeat TableColumn<Self, each V2>),
-    @InsertValuesBuilder<(V1, repeat each V2)>
+  public static func insert<
+    V1: _TableColumnExpression,
+    each V2: _TableColumnExpression,
+    T1: _TableColumnExpression,
+    each T2: _TableColumnExpression
+  >(
+    _ columns: (TableColumns) -> (V1, repeat each V2),
+    @InsertValuesBuilder<(V1.Value, repeat (each V2).Value)>
     values: () -> [[QueryFragment]],
-    onConflict conflictTargets: (TableColumns) -> (
-      TableColumn<Self, T1>, repeat TableColumn<Self, each T2>
-    ),
+    onConflict conflictTargets: (TableColumns) -> (T1, repeat each T2),
     @QueryFragmentBuilder<Bool>
     where targetFilter: (TableColumns) -> [QueryFragment] = { _ in [] },
     doUpdate updates: (inout Updates<Self>) -> Void,
@@ -366,11 +368,14 @@ extension Table {
     )
   }
 
-  private static func _insert<each Value, each ConflictTarget>(
-    _ columns: (TableColumns) -> (repeat TableColumn<Self, each Value>),
-    @InsertValuesBuilder<(repeat each Value)>
+  private static func _insert<
+    each Value: _TableColumnExpression,
+    each ConflictTarget: _TableColumnExpression
+  >(
+    _ columns: (TableColumns) -> (repeat each Value),
+    @InsertValuesBuilder<(repeat (each Value).Value)>
     values: () -> [[QueryFragment]],
-    onConflict conflictTargets: (TableColumns) -> (repeat TableColumn<Self, each ConflictTarget>)?,
+    onConflict conflictTargets: (TableColumns) -> (repeat each ConflictTarget)?,
     @QueryFragmentBuilder<Bool>
     where targetFilter: (TableColumns) -> [QueryFragment] = { _ in [] },
     doUpdate updates: ((inout Updates<Self>, Excluded) -> Void)?,
@@ -379,7 +384,7 @@ extension Table {
   ) -> InsertOf<Self> {
     var columnNames: [String] = []
     for column in repeat each columns(Self.columns) {
-      columnNames.append(column.name)
+      columnNames.append(contentsOf: column._names)
     }
     return _insert(
       columnNames: columnNames,
@@ -404,11 +409,29 @@ extension Table {
   ///   - updateFilter: A filter to apply to the update clause.
   /// - Returns: An insert statement.
   public static func insert<
-    V1,
-    each V2
+    V1: _TableColumnExpression,
+    each V2: _TableColumnExpression
   >(
-    _ columns: (TableColumns) -> (TableColumn<Self, V1>, repeat TableColumn<Self, each V2>),
-    select selection: () -> some PartialSelectStatement<(V1, repeat each V2)>,
+    _ columns: (TableColumns) -> (V1, repeat each V2),
+    select selection: () -> some PartialSelectStatement<(V1.Value, repeat (each V2).Value)>,
+    onConflictDoUpdate updates: ((inout Updates<Self>, Excluded) -> Void)? = nil,
+    @QueryFragmentBuilder<Bool>
+    where updateFilter: (TableColumns) -> [QueryFragment] = { _ in [] }
+  ) -> InsertOf<Self> {
+    _insert(
+      columns,
+      select: selection,
+      onConflict: { _ -> ()? in nil },
+      where: { _ in return [] },
+      doUpdate: updates,
+      where: updateFilter
+    )
+  }
+
+  // NB: This overload is required due to a parameter pack bug.
+  public static func insert<V1: _TableColumnExpression>(
+    _ columns: (TableColumns) -> V1,
+    select selection: () -> some PartialSelectStatement<V1.Value>,
     onConflictDoUpdate updates: ((inout Updates<Self>, Excluded) -> Void)? = nil,
     @QueryFragmentBuilder<Bool>
     where updateFilter: (TableColumns) -> [QueryFragment] = { _ in [] }
@@ -436,11 +459,11 @@ extension Table {
   ///   - updateFilter: A filter to apply to the update clause.
   /// - Returns: An insert statement.
   public static func insert<
-    V1,
-    each V2
+    V1: _TableColumnExpression,
+    each V2: _TableColumnExpression
   >(
-    _ columns: (TableColumns) -> (TableColumn<Self, V1>, repeat TableColumn<Self, each V2>),
-    select selection: () -> some PartialSelectStatement<(V1, repeat each V2)>,
+    _ columns: (TableColumns) -> (V1, repeat each V2),
+    select selection: () -> some PartialSelectStatement<(V1.Value, repeat (each V2).Value)>,
     onConflictDoUpdate updates: ((inout Updates<Self>) -> Void)?,
     @QueryFragmentBuilder<Bool>
     where updateFilter: (TableColumns) -> [QueryFragment] = { _ in [] }
@@ -468,16 +491,41 @@ extension Table {
   ///   - updateFilter: A filter to apply to the update clause.
   /// - Returns: An insert statement.
   public static func insert<
-    V1,
-    each V2,
-    T1,
-    each T2
+    V1: _TableColumnExpression,
+    each V2: _TableColumnExpression,
+    T1: _TableColumnExpression,
+    each T2: _TableColumnExpression
   >(
-    _ columns: (TableColumns) -> (TableColumn<Self, V1>, repeat TableColumn<Self, each V2>),
-    select selection: () -> some PartialSelectStatement<(V1, repeat each V2)>,
-    onConflict conflictTargets: (TableColumns) -> (
-      TableColumn<Self, T1>, repeat TableColumn<Self, each T2>
-    ),
+    _ columns: (TableColumns) -> (V1, repeat each V2),
+    select selection: () -> some PartialSelectStatement<(V1.Value, repeat (each V2).Value)>,
+    onConflict conflictTargets: (TableColumns) -> (T1, repeat each T2),
+    @QueryFragmentBuilder<Bool>
+    where targetFilter: (TableColumns) -> [QueryFragment] = { _ in [] },
+    doUpdate updates: (inout Updates<Self>, Excluded) -> Void = { _, _ in },
+    @QueryFragmentBuilder<Bool>
+    where updateFilter: (TableColumns) -> [QueryFragment] = { _ in [] }
+  ) -> InsertOf<Self> {
+    withoutActuallyEscaping(updates) { updates in
+      _insert(
+        columns,
+        select: selection,
+        onConflict: conflictTargets,
+        where: targetFilter,
+        doUpdate: updates,
+        where: updateFilter
+      )
+    }
+  }
+
+  // NB: This overload is required due to a parameter pack bug.
+  public static func insert<
+    V1: _TableColumnExpression,
+    T1: _TableColumnExpression,
+    each T2: _TableColumnExpression
+  >(
+    _ columns: (TableColumns) -> V1,
+    select selection: () -> some PartialSelectStatement<V1.Value>,
+    onConflict conflictTargets: (TableColumns) -> (T1, repeat each T2),
     @QueryFragmentBuilder<Bool>
     where targetFilter: (TableColumns) -> [QueryFragment] = { _ in [] },
     doUpdate updates: (inout Updates<Self>, Excluded) -> Void = { _, _ in },
@@ -511,16 +559,14 @@ extension Table {
   ///   - updateFilter: A filter to apply to the update clause.
   /// - Returns: An insert statement.
   public static func insert<
-    V1,
-    each V2,
-    T1,
-    each T2
+    V1: _TableColumnExpression,
+    each V2: _TableColumnExpression,
+    T1: _TableColumnExpression,
+    each T2: _TableColumnExpression
   >(
-    _ columns: (TableColumns) -> (TableColumn<Self, V1>, repeat TableColumn<Self, each V2>),
-    select selection: () -> some PartialSelectStatement<(V1, repeat each V2)>,
-    onConflict conflictTargets: (TableColumns) -> (
-      TableColumn<Self, T1>, repeat TableColumn<Self, each T2>
-    ),
+    _ columns: (TableColumns) -> (V1, repeat each V2),
+    select selection: () -> some PartialSelectStatement<(V1.Value, repeat (each V2).Value)>,
+    onConflict conflictTargets: (TableColumns) -> (T1, repeat each T2),
     @QueryFragmentBuilder<Bool>
     where targetFilter: (TableColumns) -> [QueryFragment] = { _ in [] },
     doUpdate updates: (inout Updates<Self>) -> Void,
@@ -537,13 +583,40 @@ extension Table {
     )
   }
 
-  private static func _insert<
-    each Value,
-    each ConflictTarget
+  // NB: This overload is required due to a parameter pack bug.
+  public static func insert<
+    V1: _TableColumnExpression,
+    T1: _TableColumnExpression,
+    each T2: _TableColumnExpression
   >(
-    _ columns: (TableColumns) -> (repeat TableColumn<Self, each Value>),
-    select selection: () -> some PartialSelectStatement<(repeat each Value)>,
-    onConflict conflictTargets: (TableColumns) -> (repeat TableColumn<Self, each ConflictTarget>)?,
+    _ columns: (TableColumns) -> V1,
+    select selection: () -> some PartialSelectStatement<V1.Value>,
+    onConflict conflictTargets: (TableColumns) -> (T1, repeat each T2),
+    @QueryFragmentBuilder<Bool>
+    where targetFilter: (TableColumns) -> [QueryFragment] = { _ in [] },
+    doUpdate updates: (inout Updates<Self>) -> Void,
+    @QueryFragmentBuilder<Bool>
+    where updateFilter: (TableColumns) -> [QueryFragment] = { _ in [] }
+  ) -> InsertOf<Self> {
+    insert(
+      columns,
+      select: selection,
+      onConflict: conflictTargets,
+      where: targetFilter,
+      doUpdate: { row, _ in updates(&row) },
+      where: updateFilter
+    )
+  }
+
+  // NB: We should constrain these generics `where Root == Self` when Swift supports same-type
+  //     constraints in parameter packs.
+  private static func _insert<
+    each Value: _TableColumnExpression,
+    each ConflictTarget: _TableColumnExpression
+  >(
+    _ columns: (TableColumns) -> (repeat each Value),
+    select selection: () -> some PartialSelectStatement<(repeat (each Value).Value)>,
+    onConflict conflictTargets: (TableColumns) -> (repeat each ConflictTarget)?,
     @QueryFragmentBuilder<Bool>
     where targetFilter: (TableColumns) -> [QueryFragment] = { _ in [] },
     doUpdate updates: ((inout Updates<Self>, Excluded) -> Void)?,
@@ -552,7 +625,7 @@ extension Table {
   ) -> InsertOf<Self> {
     var columnNames: [String] = []
     for column in repeat each columns(Self.columns) {
-      columnNames.append(column.name)
+      columnNames.append(contentsOf: column._names)
     }
     return _insert(
       columnNames: columnNames,
@@ -585,10 +658,10 @@ extension Table {
     )
   }
 
-  fileprivate static func _insert<each ConflictTarget>(
+  fileprivate static func _insert<each ConflictTarget: _TableColumnExpression>(
     columnNames: [String],
     values: InsertValues,
-    onConflict conflictTargets: (TableColumns) -> (repeat TableColumn<Self, each ConflictTarget>)?,
+    onConflict conflictTargets: (TableColumns) -> (repeat each ConflictTarget)?,
     @QueryFragmentBuilder<Bool>
     where targetFilter: (TableColumns) -> [QueryFragment] = { _ in [] },
     doUpdate updates: ((inout Updates<Self>, Excluded) -> Void)?,
@@ -598,7 +671,7 @@ extension Table {
     var conflictTargetColumnNames: [String] = []
     if let conflictTargets = conflictTargets(Self.columns) {
       for column in repeat each conflictTargets {
-        conflictTargetColumnNames.append(column.name)
+        conflictTargetColumnNames.append(contentsOf: column._names)
       }
     }
     return Insert(
@@ -638,7 +711,7 @@ extension PrimaryKeyedTable {
       onConflict: { $0.primaryKey },
       doUpdate: { updates, _ in
         for (column, excluded) in zip(Draft.TableColumns.writableColumns, Excluded.writableColumns)
-        where column.name != columns.primaryKey.name {
+        where !columns.primaryKey._names.contains(column.name) {
           updates.set(column, excluded.queryFragment)
         }
       }
@@ -939,10 +1012,10 @@ public enum InsertValuesBuilder<Value> {
   }
 
   public static func buildExpression(
-    _ expression: Value.Columns
+    _ expression: Value.Selection
   ) -> [[QueryFragment]]
-  where Value: _Selection {
-    [expression.selection.map(\.expression)]
+  where Value: Table {
+    [expression.allColumns.map(\.queryFragment)]
   }
 
   public static func buildArray(_ components: [[[QueryFragment]]]) -> [[QueryFragment]] {

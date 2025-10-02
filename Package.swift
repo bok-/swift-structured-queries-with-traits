@@ -3,6 +3,12 @@
 import CompilerPluginSupport
 import PackageDescription
 
+#if canImport(FoundationEssentials)
+  import FoundationEssentials
+#else
+  import Foundation
+#endif
+
 let package = Package(
   name: "swift-structured-queries",
   platforms: [
@@ -35,39 +41,47 @@ let package = Package(
   ],
   traits: [
     .trait(
+      name: "StructuredQueriesCasePaths",
+      description: "Introduce enum table support to StructuredQueries."
+    ),
+    .trait(
       name: "StructuredQueriesTagged",
-      description: "Introduce StructuredQueries conformances to the swift-tagged package.",
-      enabledTraits: []
+      description: "Introduce StructuredQueries conformances to the swift-tagged package."
     ),
     .trait(
       name: "StructuredQueriesCustomDump",
-      description: "Include swift-custom-dump support.",
-      enabledTraits: []
+      description: "Include swift-custom-dump support."
     ),
     .trait(
       name: "StructuredQueriesDependencies",
-      description: "Include swift-dependencies support.",
-      enabledTraits: []
+      description: "Include swift-dependencies support."
     ),
     .trait(
       name: "StructuredQueriesMacroTesting",
       description:
-        "Include swift-macro-testing support. Generally only needed when running unit tests.",
-      enabledTraits: []
+        "Include swift-macro-testing support. Generally only needed when running unit tests."
     ),
     .trait(
       name: "StructuredQueriesSnapshotTesting",
       description:
-        "Include swift-snapshot-testing support. Generally only needed when running unit tests.",
-      enabledTraits: []
+        "Include swift-snapshot-testing support. Generally only needed when running unit tests."
     ),
     .trait(
       name: "StructuredQueriesIssueReporting",
-      description: "Include swift-issue-reporting (nee xctest-dynamic-overlay) support.",
-      enabledTraits: []
+      description: "Include swift-issue-reporting (nee xctest-dynamic-overlay) support."
     ),
   ],
   dependencies: [
+    .package(
+        url: "https://github.com/bok-/swift-case-paths-with-traits",
+        from: "1.7.2+traits",
+        traits: [
+            .trait(
+                name: "CasePathsIssueReporting",
+                condition: .when(traits: ["StructuredQueriesIssueReporting"])
+            )
+        ]
+    ),
     .package(url: "https://github.com/pointfreeco/swift-custom-dump", from: "1.3.3"),
     .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.8.1"),
     .package(url: "https://github.com/bok-/swift-macro-testing-with-traits", from: "0.6.4+traits"),
@@ -99,6 +113,11 @@ let package = Package(
           name: "IssueReporting",
           package: "xctest-dynamic-overlay",
           condition: .when(traits: ["StructuredQueriesIssueReporting"])
+        ),
+        .product(
+          name: "CasePaths",
+          package: "swift-case-paths-with-traits",
+          condition: .when(traits: ["StructuredQueriesCasePaths"])
         ),
         .product(
           name: "Tagged",
@@ -206,6 +225,19 @@ let package = Package(
   ],
   swiftLanguageModes: [.v6]
 )
+
+// NB: For local testing in Xcode:
+// if true {
+if ProcessInfo.processInfo.environment["SPI_GENERATE_DOCS"] != nil {
+  package.traits.insert(
+    .default(
+      enabledTraits: [
+        "StructuredQueriesCasePaths",
+        "StructuredQueriesTagged",
+      ]
+    )
+  )
+}
 
 let swiftSettings: [SwiftSetting] = [
   .enableUpcomingFeature("MemberImportVisibility")
