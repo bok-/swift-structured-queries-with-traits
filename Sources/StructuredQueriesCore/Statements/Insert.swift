@@ -34,11 +34,11 @@ extension Table {
   /// ```swift
   /// Tag.insert {
   ///   if vehicleOwner {
-  ///     Tag(name: "car")
+  ///     Tag(title: "car")
   ///   }
-  ///   Tag(name: "kids")
-  ///   Tag(name: "someday")
-  ///   Tag(name: "optional")
+  ///   Tag(title: "kids")
+  ///   Tag(title: "someday")
+  ///   Tag(title: "optional")
   /// }
   /// // INSERT INTO "tags" ("title")
   /// // VALUES ('car'), ('kids'), ('someday'), ('optional')
@@ -99,11 +99,11 @@ extension Table {
   /// ```swift
   /// Tag.insert {
   ///   if vehicleOwner {
-  ///     Tag(name: "car")
+  ///     Tag(title: "car")
   ///   }
-  ///   Tag(name: "kids")
-  ///   Tag(name: "someday")
-  ///   Tag(name: "optional")
+  ///   Tag(title: "kids")
+  ///   Tag(title: "someday")
+  ///   Tag(title: "optional")
   /// }
   /// // INSERT INTO "tags" ("title")
   /// // VALUES ('car'), ('kids'), ('someday'), ('optional')
@@ -131,7 +131,7 @@ extension Table {
     )
   }
 
-  /// An upsert statement for one or more table rows.
+  /// An insert statement for one or more table rows.
   ///
   /// - Parameters:
   ///   - columns: Columns to insert.
@@ -164,7 +164,7 @@ extension Table {
     }
   }
 
-  /// An upsert statement for one or more table rows.
+  /// An insert statement for one or more table rows.
   ///
   /// - Parameters:
   ///   - columns: Columns to insert.
@@ -292,7 +292,7 @@ extension Table {
     )
   }
 
-  /// An upsert statement for one or more table rows.
+  /// An insert statement for one or more table rows.
   ///
   /// - Parameters:
   ///   - columns: Columns to insert.
@@ -331,7 +331,7 @@ extension Table {
     }
   }
 
-  /// An upsert statement for one or more table rows.
+  /// An insert statement for one or more table rows.
   ///
   /// - Parameters:
   ///   - columns: Columns to insert.
