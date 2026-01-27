@@ -38,6 +38,14 @@ let package = Package(
       name: "StructuredQueriesTestSupport",
       targets: ["StructuredQueriesTestSupport"]
     ),
+    .library(
+      name: "StructuredQueriesCasePaths",
+      targets: ["StructuredQueriesCasePaths"]
+    ),
+    .library(
+      name: "StructuredQueriesTagged",
+      targets: ["StructuredQueriesTagged"]
+    ),
   ],
   traits: [
     .trait(
@@ -104,6 +112,14 @@ let package = Package(
       dependencies: [
         "StructuredQueriesCore",
         "StructuredQueriesMacros",
+        .target(
+          name: "StructuredQueriesCasePaths",
+          condition: .when(traits: ["StructuredQueriesCasePaths"])
+        ),
+        .target(
+          name: "StructuredQueriesTagged",
+          condition: .when(traits: ["StructuredQueriesTagged"])
+        ),
       ]
     ),
     .target(
@@ -174,6 +190,22 @@ let package = Package(
         ),
       ]
     ),
+
+    .target(
+      name: "StructuredQueriesCasePaths",
+      dependencies: [
+        "StructuredQueriesCore",
+        .product(name: "CasePaths", package: "swift-case-paths", condition: .when(traits: ["StructuredQueriesCasePaths"])),
+      ]
+    ),
+    .target(
+      name: "StructuredQueriesTagged",
+      dependencies: [
+        "StructuredQueriesCore",
+        .product(name: "Tagged", package: "swift-tagged", condition: .when(traits: ["StructuredQueriesTagged"])),
+      ]
+    ),
+
     .testTarget(
       name: "StructuredQueriesMacrosTests",
       dependencies: [
@@ -225,21 +257,6 @@ let package = Package(
   ],
   swiftLanguageModes: [.v6]
 )
-
-if ProcessInfo.processInfo.environment["SPI_GENERATE_DOCS"] != nil
-  || (ProcessInfo.processInfo.environment["GITHUB_ACTION_REPOSITORY"] ?? "").contains(
-    "swift-structured-queries"
-  )  // || true  // NB: Uncomment for local testing in Xcode
-{
-  package.traits.insert(
-    .default(
-      enabledTraits: [
-        "StructuredQueriesCasePaths",
-        "StructuredQueriesTagged",
-      ]
-    )
-  )
-}
 
 let swiftSettings: [SwiftSetting] = [
   .enableUpcomingFeature("MemberImportVisibility")
