@@ -1,3 +1,5 @@
+public import StructuredQueriesCore
+
 /// A virtual table using the FTS5 extension.
 ///
 /// Apply this protocol to a `@Table` declaration to introduce [FTS5] helpers.

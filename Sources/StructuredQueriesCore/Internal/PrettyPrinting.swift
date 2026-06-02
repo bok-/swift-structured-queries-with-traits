@@ -1,7 +1,11 @@
 import Foundation
 
 #if canImport(IssueReporting)
-  import IssueReporting
+  #if DEBUG
+    public import IssueReporting
+  #else
+    import IssueReporting
+  #endif
 #endif
 
 extension QueryFragment {

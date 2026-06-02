@@ -1,7 +1,7 @@
 #if canImport(SnapshotTesting)
 
-  import SnapshotTesting
-  import StructuredQueriesCore
+  public import SnapshotTesting
+  public import StructuredQueriesCore
   import Testing
 
   extension Snapshotting where Value: Statement {

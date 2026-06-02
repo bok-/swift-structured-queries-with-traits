@@ -4,7 +4,7 @@
   #endif
   import Foundation
   import InlineSnapshotTesting
-  import StructuredQueriesCore
+  public import StructuredQueriesCore
 
   /// An end-to-end snapshot testing helper for statements.
   ///
