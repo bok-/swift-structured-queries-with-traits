@@ -41,11 +41,11 @@ let package = Package(
   ],
   traits: [
     .trait(
-      name: "StructuredQueriesCasePaths",
+      name: "CasePaths",
       description: "Introduce enum table support to StructuredQueries."
     ),
     .trait(
-      name: "StructuredQueriesTagged",
+      name: "Tagged",
       description: "Introduce StructuredQueries conformances to the swift-tagged package."
     ),
     .trait(
@@ -69,6 +69,16 @@ let package = Package(
     .trait(
       name: "StructuredQueriesIssueReporting",
       description: "Include swift-issue-reporting (nee xctest-dynamic-overlay) support."
+    ),
+    .trait(
+      name: "StructuredQueriesCasePaths",
+      description: "A deprecated alias for the 'CasePaths' trait.",
+      enabledTraits: ["CasePaths"]
+    ),
+    .trait(
+      name: "StructuredQueriesTagged",
+      description: "A deprecated alias for the 'Tagged' trait.",
+      enabledTraits: ["Tagged"]
     ),
   ],
   dependencies: [
@@ -117,12 +127,12 @@ let package = Package(
         .product(
           name: "CasePaths",
           package: "swift-case-paths-with-traits",
-          condition: .when(traits: ["StructuredQueriesCasePaths"])
+          condition: .when(traits: ["CasePaths", "StructuredQueriesCasePaths"])
         ),
         .product(
           name: "Tagged",
           package: "swift-tagged",
-          condition: .when(traits: ["StructuredQueriesTagged"])
+          condition: .when(traits: ["Tagged", "StructuredQueriesTagged"])
         ),
       ],
       exclude: ["Symbolic Links/README.md"]
@@ -231,8 +241,8 @@ if ProcessInfo.processInfo.environment["SPI_GENERATE_DOCS"] != nil  // || true  
   package.traits.insert(
     .default(
       enabledTraits: [
-        "StructuredQueriesCasePaths",
-        "StructuredQueriesTagged",
+        "CasePaths",
+        "Tagged",
       ]
     )
   )
