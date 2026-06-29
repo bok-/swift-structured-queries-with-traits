@@ -84,7 +84,7 @@ let package = Package(
   dependencies: [
     .package(
         url: "https://github.com/bok-/swift-case-paths-with-traits",
-        from: "1.7.2+traits",
+        from: "1.8.0",
         traits: [
             .trait(
                 name: "CasePathsIssueReporting",
@@ -114,6 +114,11 @@ let package = Package(
       dependencies: [
         "StructuredQueriesCore",
         "StructuredQueriesMacros",
+        .product(
+          name: "CasePaths",
+          package: "swift-case-paths-with-traits",
+          condition: .when(traits: ["CasePaths"])
+        ),
       ]
     ),
     .target(
@@ -140,6 +145,11 @@ let package = Package(
     .macro(
       name: "StructuredQueriesMacros",
       dependencies: [
+        .product(
+          name: "CasePathsMacrosSupport",
+          package: "swift-case-paths-with-traits",
+          condition: .when(traits: ["CasePaths"])
+        ),
         .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
         .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
       ],
